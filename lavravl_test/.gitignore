@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Database files (actual data, not migrations)
+/database/*.sqlite
+/database/*.db
