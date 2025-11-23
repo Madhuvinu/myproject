@@ -13,7 +13,7 @@ Think of them as:
 
 ### Format: `YYYY_MM_DD_HHMMSS_descriptive_name.php`
 
-Example: `2025_11_23_061129_add_role_to_users_table.php`
+Example: `2025_11_23_061129_add_role_to_users_table.aphp`
 
 **Breaking it down:**
 - `2025_11_23` = Date (Year-Month-Day)

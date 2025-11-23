@@ -43,7 +43,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <input type="text" class="search-input" placeholder="Search products...">
+                    <input type="text" class="search-input" id="productSearch" placeholder="Search products..." onkeyup="searchProducts(this.value)">
                 </div>
                 @auth
                     <form id="logoutForm" method="POST" action="{{ route('logout') }}" style="display: none;">
@@ -82,28 +82,33 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-content">
-            <div style="font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9;">Traditionally</div>
-            <h1>Hand Churned</h1>
-            <div style="font-size: 1.5rem; margin-bottom: 2rem;">A2 Gir Cow Bilona Ghee</div>
-            
-            <div class="hero-features">
-                <div class="feature-item">
-                    <div class="feature-icon">❤️</div>
-                    <div class="feature-text">Highly Nutritious</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🔄</div>
-                    <div class="feature-text">Made using the Bilona Process</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🐄</div>
-                    <div class="feature-text">Made from Milk of Desi Cows</div>
-                </div>
+        <div class="hero-slider">
+            <div class="slide active">
+                <img src="{{ asset('images/Himalayan_Basket_Lorry_Ad.png') }}" alt="Himalayan Basket Lorry Ad" class="hero-image lorry-image">
+                <!-- Smoke effect near tires -->
+                <div class="smoke smoke-1"></div>
+                <div class="smoke smoke-2"></div>
+                <div class="smoke smoke-3"></div>
+                <!-- Wheel rotation on existing wheels -->
+                <div class="wheel-rotate wheel-1"></div>
+                <div class="wheel-rotate wheel-2"></div>
+                <div class="wheel-rotate wheel-3"></div>
             </div>
-            
-            <a href="#products" class="btn-shop">Shop Now</a>
+            <div class="slide">
+                <img src="{{ asset('images/useme.png') }}" alt="Himalayan Basket Banner" class="hero-image">
+            </div>
+            <!-- Add more slides here if needed -->
         </div>
+        
+        <!-- Slider Controls -->
+        <div class="slider-controls">
+            <button class="slider-btn prev" onclick="changeSlide(-1)">❮</button>
+            <button class="slider-btn next" onclick="changeSlide(1)">❯</button>
+        </div>
+        
+        <!-- Slider Dots -->
+        <div class="slider-dots" id="sliderDots"></div>
+        
     </section>
 
     <!-- Products Section -->
@@ -111,9 +116,9 @@
         <h2 class="section-title">Our Range</h2>
         <p class="section-subtitle">All Natural Grocery Products Just for You</p>
         
-        <div class="products-grid">
+        <div class="products-grid" id="productsGrid">
             @forelse($products as $product)
-                <div class="product-card">
+                <div class="product-card" data-product-name="{{ strtolower($product->name) }}" data-product-description="{{ strtolower($product->description ?? '') }}">
                     <div class="product-image">
                         @if($product->image)
                             <img src="{{ asset('storage/products/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
@@ -142,6 +147,11 @@
                     <p>Check back soon for our amazing products!</p>
                 </div>
             @endforelse
+        </div>
+        
+        <div id="noResults" style="display: none; grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+            <p style="font-size: 1.2rem; margin-bottom: 1rem;">No products found matching your search.</p>
+            <p>Try a different search term.</p>
         </div>
     </section>
 
@@ -263,6 +273,131 @@
                 closeAuthModal();
             }
         });
+        
+        // Search functionality - Client-side filtering for instant results
+        function searchProducts(searchTerm) {
+            const searchLower = searchTerm.toLowerCase().trim();
+            const productCards = document.querySelectorAll('.product-card');
+            const noResults = document.getElementById('noResults');
+            let visibleCount = 0;
+            
+            productCards.forEach(card => {
+                const productName = card.getAttribute('data-product-name') || '';
+                const productDescription = card.getAttribute('data-product-description') || '';
+                
+                if (searchTerm === '' || 
+                    productName.includes(searchLower) || 
+                    productDescription.includes(searchLower)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show/hide "no results" message
+            if (searchTerm !== '' && visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+        
+        // Server-side search on Enter key (for more comprehensive search)
+        document.getElementById('productSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const searchTerm = this.value.trim();
+                if (searchTerm) {
+                    window.location.href = '/?search=' + encodeURIComponent(searchTerm) + '#products';
+                } else {
+                    window.location.href = '/#products';
+                }
+            }
+        });
+        
+        // Slider functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('sliderDots');
+        let autoSlide;
+        
+        // Create dots
+        function createDots() {
+            if (slides.length > 1 && dotsContainer) {
+                dotsContainer.innerHTML = ''; // Clear existing dots
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot' + (index === currentSlide ? ' active' : '');
+                    dot.onclick = () => goToSlide(index);
+                    dotsContainer.appendChild(dot);
+                });
+            }
+        }
+        
+        // Update slides
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            
+            // Restart auto-play when slide changes
+            clearInterval(autoSlide);
+            startAutoPlay();
+        }
+        
+        // Change slide
+        function changeSlide(direction) {
+            if (slides.length <= 1) return;
+            currentSlide += direction;
+            if (currentSlide < 0) {
+                currentSlide = slides.length - 1;
+            } else if (currentSlide >= slides.length) {
+                currentSlide = 0;
+            }
+            updateSlides();
+        }
+        
+        // Go to specific slide
+        function goToSlide(index) {
+            if (slides.length <= 1) return;
+            currentSlide = index;
+            updateSlides();
+        }
+        
+        // Start auto-play
+        function startAutoPlay() {
+            autoSlide = setInterval(() => {
+                changeSlide(1);
+            }, 7000);
+        }
+        
+        // Pause auto-play on hover
+        const heroSlider = document.querySelector('.hero-slider');
+        if (heroSlider) {
+            heroSlider.addEventListener('mouseenter', () => {
+                clearInterval(autoSlide);
+            });
+            
+            heroSlider.addEventListener('mouseleave', () => {
+                startAutoPlay();
+            });
+        }
+        
+        // Start auto-play initially
+        startAutoPlay();
+        
+        // Initialize dots when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', createDots);
+        } else {
+            createDots();
+        }
     </script>
 </body>
 </html>

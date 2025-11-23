@@ -374,13 +374,349 @@
         }
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 50%, #ffd700 100%);
-            padding: 4rem 2rem;
+            padding: 20px;
             text-align: center;
             color: white;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+            height: 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        
+        .hero-slider {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            width: calc(100% - 40px);
+            height: calc(100% - 40px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            overflow: hidden;
+        }
+        
+        .slide.active {
+            opacity: 1;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+        }
+        
+        /* Dark effect and bubble animation for useme.png - first slide */
+        .slide:first-child {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide:first-child .hero-image {
+            filter: brightness(0.85) contrast(1.2) saturate(1.1);
+            position: relative;
+        }
+        
+        /* Bubble effect */
+        .slide:first-child::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 20%;
+            left: 15%;
+            animation: bubbleFloat1 6s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .slide:first-child::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 60%;
+            right: 20%;
+            animation: bubbleFloat2 7s ease-in-out infinite 1s;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        @keyframes bubbleFloat1 {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.6;
+            }
+            33% {
+                transform: translateY(-30px) translateX(20px) scale(1.2);
+                opacity: 0.8;
+            }
+            66% {
+                transform: translateY(-60px) translateX(-10px) scale(0.9);
+                opacity: 0.7;
+            }
+        }
+        
+        @keyframes bubbleFloat2 {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.5;
+            }
+            33% {
+                transform: translateY(-40px) translateX(-15px) scale(1.3);
+                opacity: 0.7;
+            }
+            66% {
+                transform: translateY(-70px) translateX(25px) scale(0.8);
+                opacity: 0.6;
+            }
+        }
+        
+        
+        
+        /* Lorry effects - smoke and wheel rotation */
+        .slide:nth-child(2) {
+            position: absolute;
+            overflow: hidden;
+        }
+        
+        /* Specific styling for larger images to ensure proper fit */
+        .slide:nth-child(2) .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+        }
+        
+        /* Smoke effect from lorry exhaust near tires - only on active slide */
+        .slide.active .smoke {
+            position: absolute;
+            background: radial-gradient(circle, rgba(180, 180, 180, 0.7) 0%, rgba(140, 140, 140, 0.5) 30%, rgba(100, 100, 100, 0.3) 60%, transparent 100%);
+            border-radius: 50%;
+            z-index: 2;
+            pointer-events: none;
+            animation: smokeRise 4s ease-out infinite;
+            filter: blur(8px);
+        }
+        
+        /* Hide smoke when slide is not active */
+        .slide:not(.active) .smoke {
+            display: none;
+        }
+        
+        .smoke-1 {
+            top: 70%;
+            left: 30%;
+            width: 50px;
+            height: 50px;
+            animation-delay: 0s;
+        }
+        
+        .smoke-2 {
+            top: 68%;
+            left: 33%;
+            width: 65px;
+            height: 65px;
+            animation-delay: 0.7s;
+        }
+        
+        .smoke-3 {
+            top: 66%;
+            left: 36%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 1.4s;
+        }
+        
+        @keyframes smokeRise {
+            0% {
+                opacity: 0.9;
+                transform: translateY(0) translateX(0) scale(0.6);
+            }
+            30% {
+                opacity: 0.7;
+                transform: translateY(-25px) translateX(8px) scale(1);
+            }
+            60% {
+                opacity: 0.5;
+                transform: translateY(-50px) translateX(15px) scale(1.3);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) translateX(25px) scale(1.8);
+            }
+        }
+        
+        /* Wheel rotation on existing wheels - rotates 2 rounds after 5 seconds, then slide changes */
+        .slide.active .wheel-rotate {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 3;
+            pointer-events: none;
+            animation: wheelRotateBeforeChange 2s linear 1;
+            animation-delay: 5s;
+            animation-fill-mode: forwards;
+            border: 2px solid rgba(150, 150, 150, 0.5);
+            background: radial-gradient(circle, rgba(100, 100, 100, 0.2) 0%, transparent 60%);
+        }
+        
+        /* Hide wheels when slide is not active */
+        .slide:not(.active) .wheel-rotate {
+            display: none;
+        }
+        
+        .wheel-rotate::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: rgba(180, 180, 180, 0.9);
+            border-radius: 50%;
+            box-shadow: 
+                0 -18px 0 2px rgba(140, 140, 140, 0.7),
+                0 18px 0 2px rgba(140, 140, 140, 0.7),
+                -18px 0 0 2px rgba(140, 140, 140, 0.7),
+                18px 0 0 2px rgba(140, 140, 140, 0.7),
+                -12px -12px 0 1.5px rgba(140, 140, 140, 0.6),
+                12px 12px 0 1.5px rgba(140, 140, 140, 0.6),
+                -12px 12px 0 1.5px rgba(140, 140, 140, 0.6),
+                12px -12px 0 1.5px rgba(140, 140, 140, 0.6);
+        }
+        
+        .wheel-1 {
+            top: 84%;
+            left: 17.5%;
+            width: 55px;
+            height: 55px;
+        }
+        
+        .wheel-2 {
+            top: 84%;
+            left: 29%;
+            width: 55px;
+            height: 55px;
+        }
+        
+        .wheel-3 {
+            top: 83.5%;
+            left: 78%;
+            width: 55px;
+            height: 55px;
+        }
+        
+        @keyframes wheelRotateBeforeChange {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(720deg);
+            }
+        }
+        
+        
+        /* Slider Controls */
+        .slider-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .slider-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            pointer-events: all;
+            z-index: 6;
+        }
+        
+        .slider-btn:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        /* Slider Dots */
+        .slider-dots {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 5;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .dot.active {
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(255, 255, 255, 1);
+        }
+        
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                height: 300px;
+            }
+            .slider-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+        
         .hero::before {
             content: '';
             position: absolute;
@@ -388,14 +724,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,100 Q300,50 600,100 T1200,100 L1200,200 L0,200 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-            opacity: 0.3;
+            background: transparent;
+            z-index: 0;
         }
         .hero-content {
             max-width: 1200px;
             margin: 0 auto;
             position: relative;
-            z-index: 1;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .hero h1 {
             font-size: 3rem;

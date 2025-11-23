@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ApiExampleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -17,8 +18,20 @@ use App\Models\Product;
 // ========================================
 
 // Homepage - E-commerce landing page
-Route::get('/', function () {
-    $products = Product::where('is_active', true)->latest()->take(12)->get();
+Route::get('/', function (Request $request) {
+    $query = Product::where('is_active', true);
+    
+    // If search parameter exists, filter products
+    if ($request->has('search') && $request->search) {
+        $searchTerm = $request->search;
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('name', 'like', '%' . $searchTerm . '%')
+              ->orWhere('description', 'like', '%' . $searchTerm . '%')
+              ->orWhere('category', 'like', '%' . $searchTerm . '%');
+        });
+    }
+    
+    $products = $query->latest()->take(12)->get();
     $cartCount = auth()->check() ? auth()->user()->cartItems->sum('quantity') : 0;
     return view('homepage', compact('products', 'cartCount'));
 });
