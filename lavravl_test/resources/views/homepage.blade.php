@@ -31,10 +31,10 @@
             </a>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="/">HOME</a></li>
-                    <li><a href="#products">SHOP</a></li>
-                    <li><a href="/about">ABOUT US</a></li>
-                    <li><a href="#contact">CONTACT</a></li>
+                    <li><a href="/" onclick="showSection('home'); return false;">HOME</a></li>
+                    <li><a href="#products" onclick="showSection('products'); return false;">SHOP</a></li>
+                    <li><a href="#about-us" onclick="showSection('about-us'); return false;">ABOUT US</a></li>
+                    <li><a href="#contact" onclick="showSection('contact'); return false;">CONTACT</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
@@ -100,11 +100,6 @@
             <!-- Add more slides here if needed -->
         </div>
         
-        <!-- Slider Controls -->
-        <div class="slider-controls">
-            <button class="slider-btn prev" onclick="changeSlide(-1)">❮</button>
-            <button class="slider-btn next" onclick="changeSlide(1)">❯</button>
-        </div>
         
         <!-- Slider Dots -->
         <div class="slider-dots" id="sliderDots"></div>
@@ -113,6 +108,14 @@
 
     <!-- Products Section -->
     <section class="products-section" id="products">
+        <div class="shop-now-container">
+            <a href="#products" class="shop-now-btn">
+                <span>Shop Now</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </div>
         <h2 class="section-title">Our Range</h2>
         <p class="section-subtitle">All Natural Grocery Products Just for You</p>
         
@@ -155,13 +158,146 @@
         </div>
     </section>
 
+    <!-- About Us Section -->
+    <section class="about-us-section" id="about-us" style="display: none;">
+        <div class="about-us-container">
+            @if($aboutUs)
+                @if($aboutUs->title)
+                    <h2 class="section-title">{{ $aboutUs->title }}</h2>
+                @else
+                    <h2 class="section-title">About Us</h2>
+                @endif
+                
+                @if($aboutUs->content)
+                    <div class="about-content">
+                        <p>{{ $aboutUs->content }}</p>
+                    </div>
+                @endif
+                
+                @if($aboutUs->images->count() > 0)
+                    <div class="about-images">
+                        @foreach($aboutUs->images as $image)
+                            <div class="about-image-item">
+                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="About Us Image">
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+                
+                <div class="about-details">
+                    @if($aboutUs->mission)
+                        <div class="about-detail-card">
+                            <h3>Our Mission</h3>
+                            <p>{{ $aboutUs->mission }}</p>
+                        </div>
+                    @endif
+                    
+                    @if($aboutUs->vision)
+                        <div class="about-detail-card">
+                            <h3>Our Vision</h3>
+                            <p>{{ $aboutUs->vision }}</p>
+                        </div>
+                    @endif
+                    
+                    @if($aboutUs->values)
+                        <div class="about-detail-card">
+                            <h3>Our Values</h3>
+                            <p>{{ $aboutUs->values }}</p>
+                        </div>
+                    @endif
+                </div>
+            @else
+                <div class="about-us-empty">
+                    <h2 class="section-title">About Us</h2>
+                    <p>Content coming soon...</p>
+                </div>
+            @endif
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer" id="contact">
         <div class="footer-content">
-            <h3>HIMALAYAN Basket</h3>
-            <p style="margin-top: 1rem; opacity: 0.8;">100% Natural Grocery Products</p>
-            <p style="margin-top: 1rem; opacity: 0.8;">Contact us: info@himalayanbasket.com</p>
-            <p style="margin-top: 2rem; opacity: 0.6;">&copy; 2025 Himalayan Basket. All rights reserved.</p>
+            <div class="footer-brand">
+                <h3>HIMALAYAN Basket</h3>
+                <p class="footer-tagline">100% Natural Grocery Products</p>
+            </div>
+            
+            <div class="footer-features">
+                <div class="footer-feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <p>100% Natural ingredients</p>
+                </div>
+                <div class="footer-feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                        </svg>
+                    </div>
+                    <p>GMO Free</p>
+                </div>
+                <div class="footer-feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <p>Ethically & Sustainably sourced</p>
+                </div>
+                <div class="footer-feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                        </svg>
+                    </div>
+                    <p>Preservative Free</p>
+                </div>
+                <div class="footer-feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <p>Unprocessed Products</p>
+                </div>
+            </div>
+            
+            <div class="footer-contact">
+                <div class="contact-item">
+                    <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <div>
+                        <p class="contact-label">Location</p>
+                        <p class="contact-value">Champawat, Uttarakhand 262523, India</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <div>
+                        <p class="contact-label">Email</p>
+                        <p class="contact-value">info@himalayanbasket.com</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                <p>&copy; 2025 Himalayan Basket. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
@@ -227,6 +363,49 @@
     </div>
 
     <script>
+        // Show/hide sections functionality
+        function showSection(sectionName) {
+            // Hide all main sections
+            const hero = document.querySelector('.hero');
+            const productsSection = document.querySelector('.products-section');
+            const aboutUsSection = document.querySelector('.about-us-section');
+            
+            if (hero) hero.style.display = 'none';
+            if (productsSection) productsSection.style.display = 'none';
+            if (aboutUsSection) aboutUsSection.style.display = 'none';
+            
+            // Show selected section
+            if (sectionName === 'home') {
+                if (hero) hero.style.display = 'flex';
+                if (productsSection) productsSection.style.display = 'block';
+            } else if (sectionName === 'products') {
+                if (hero) hero.style.display = 'flex';
+                if (productsSection) productsSection.style.display = 'block';
+                // Scroll to products
+                setTimeout(() => {
+                    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } else if (sectionName === 'about-us') {
+                if (aboutUsSection) {
+                    aboutUsSection.style.display = 'block';
+                    // Scroll to about us
+                    setTimeout(() => {
+                        document.getElementById('about-us').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        }
+        
+        // Handle hash navigation on page load
+        window.addEventListener('load', function() {
+            const hash = window.location.hash;
+            if (hash === '#about-us') {
+                showSection('about-us');
+            } else if (hash === '#products') {
+                showSection('products');
+            }
+        });
+        
         function openAuthModal() {
             document.getElementById('authModal').classList.add('active');
         }
@@ -337,8 +516,22 @@
         
         // Update slides
         function updateSlides() {
+            const wasActive = slides[currentSlide]?.classList.contains('active');
+            
             slides.forEach((slide, index) => {
                 slide.classList.toggle('active', index === currentSlide);
+                
+                // Reset wheel animations when lorry slide becomes active
+                if (index === currentSlide && !wasActive && slide.querySelector('.lorry-image')) {
+                    const wheelRotates = slide.querySelectorAll('.wheel-rotate');
+                    wheelRotates.forEach(wheel => {
+                        wheel.style.animation = 'none';
+                        void wheel.offsetWidth; // Trigger reflow
+                        wheel.style.animation = 'wheelRotateBeforeChange 2s linear 1';
+                        wheel.style.animationDelay = '5s';
+                        wheel.style.animationFillMode = 'forwards';
+                    });
+                }
             });
             
             const dots = document.querySelectorAll('.dot');
@@ -348,6 +541,7 @@
             
             // Restart auto-play when slide changes
             clearInterval(autoSlide);
+            clearTimeout(autoSlide);
             startAutoPlay();
         }
         
@@ -372,9 +566,23 @@
         
         // Start auto-play
         function startAutoPlay() {
-            autoSlide = setInterval(() => {
-                changeSlide(1);
-            }, 7000);
+            clearInterval(autoSlide);
+            
+            // Check if current slide is the lorry slide (first slide with wheels)
+            const currentSlideElement = slides[currentSlide];
+            const isLorrySlide = currentSlideElement && currentSlideElement.querySelector('.lorry-image');
+            
+            if (isLorrySlide) {
+                // For lorry slide: wait 7 seconds (5s delay + 2s rotation) before changing
+                autoSlide = setTimeout(() => {
+                    changeSlide(1);
+                }, 7000);
+            } else {
+                // For other slides: use normal interval
+                autoSlide = setInterval(() => {
+                    changeSlide(1);
+                }, 7000);
+            }
         }
         
         // Pause auto-play on hover

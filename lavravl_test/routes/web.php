@@ -11,7 +11,9 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AboutUsController;
 use App\Models\Product;
+use App\Models\AboutUs;
 
 // ========================================
 // AUTHENTICATION ROUTES
@@ -33,7 +35,8 @@ Route::get('/', function (Request $request) {
     
     $products = $query->latest()->take(12)->get();
     $cartCount = auth()->check() ? auth()->user()->cartItems->sum('quantity') : 0;
-    return view('homepage', compact('products', 'cartCount'));
+    $aboutUs = AboutUs::with('images')->where('is_active', true)->first();
+    return view('homepage', compact('products', 'cartCount', 'aboutUs'));
 });
 
 // Login routes
@@ -149,4 +152,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     // Users Management
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    
+    // About Us Management
+    Route::resource('about-us', AboutUsController::class)->parameters([
+        'about-us' => 'aboutUs'
+    ]);
+    Route::delete('/about-us/{aboutUs}/images/{image}', [AboutUsController::class, 'deleteImage'])->name('about-us.deleteImage');
 });

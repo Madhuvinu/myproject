@@ -55,6 +55,7 @@
                 <li><a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">Products</a></li>
                 <li><a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">Orders</a></li>
                 <li><a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Users</a></li>
+                <li><a href="{{ route('admin.about-us.index') }}" class="{{ request()->routeIs('admin.about-us.*') ? 'active' : '' }}">About Us</a></li>
                 <li><a href="/" target="_blank">View Site</a></li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
