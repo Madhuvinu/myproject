@@ -95,7 +95,20 @@
                 <div class="wheel-rotate wheel-3"></div>
             </div>
             <div class="slide">
-                <img src="{{ asset('images/useme.png') }}" alt="Himalayan Basket Banner" class="hero-image">
+                <img src="{{ asset('images/useme copy.png') }}" alt="Himalayan Basket Banner" class="hero-image useme-image">
+                <!-- Pop-up text appearing one by one -->
+                <div class="useme-popup-text">
+                    <div class="popup-content">
+                        <!-- Cloud templates inside -->
+                        <div class="cloud cloud-1"></div>
+                        <div class="cloud cloud-2"></div>
+                        <div class="cloud cloud-3"></div>
+                        <div class="cloud cloud-4"></div>
+                        <span class="popup-text-line popup-line-1">Chew bars</span>
+                        <span class="popup-text-line popup-line-2">from Pure Cow</span>
+                        <span class="popup-text-line popup-line-3">- Himalayan Bars</span>
+                    </div>
+                </div>
             </div>
             <!-- Add more slides here if needed -->
         </div>
@@ -134,12 +147,27 @@
                         <div class="product-description">{{ $product->description ?? 'Premium quality product' }}</div>
                         <div class="product-price">${{ number_format($product->price, 2) }}</div>
                         @auth
-                            <form action="{{ route('cart.add', $product) }}" method="POST" style="display: inline;">
+                            <form action="{{ route('cart.add', $product) }}" method="POST" class="product-cart-form">
                                 @csrf
-                                <input type="hidden" name="quantity" value="1">
+                                <div class="quantity-selector">
+                                    <label for="quantity-{{ $product->id }}" class="quantity-label">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn quantity-decrease" onclick="decreaseQuantity({{ $product->id }})">-</button>
+                                        <input type="number" id="quantity-{{ $product->id }}" name="quantity" value="1" min="1" max="99" class="quantity-input" readonly>
+                                        <button type="button" class="quantity-btn quantity-increase" onclick="increaseQuantity({{ $product->id }})">+</button>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn-add-cart">Add to Cart</button>
                             </form>
                         @else
+                            <div class="quantity-selector">
+                                <label class="quantity-label">Quantity:</label>
+                                <div class="quantity-controls">
+                                    <button type="button" class="quantity-btn quantity-decrease" onclick="openAuthModal()">-</button>
+                                    <input type="number" value="1" min="1" max="99" class="quantity-input" readonly>
+                                    <button type="button" class="quantity-btn quantity-increase" onclick="openAuthModal()">+</button>
+                                </div>
+                            </div>
                             <button class="btn-add-cart" onclick="openAuthModal()">Add to Cart</button>
                         @endauth
                     </div>
@@ -495,6 +523,23 @@
             }
         });
         
+        // Quantity control functions
+        function increaseQuantity(productId) {
+            const input = document.getElementById('quantity-' + productId);
+            const currentValue = parseInt(input.value) || 1;
+            if (currentValue < 99) {
+                input.value = currentValue + 1;
+            }
+        }
+        
+        function decreaseQuantity(productId) {
+            const input = document.getElementById('quantity-' + productId);
+            const currentValue = parseInt(input.value) || 1;
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+        
         // Slider functionality
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -539,9 +584,11 @@
                 dot.classList.toggle('active', index === currentSlide);
             });
             
-            // Restart auto-play when slide changes
-            clearInterval(autoSlide);
-            clearTimeout(autoSlide);
+            // Restart auto-play when slide changes - this ensures proper timing
+            if (autoSlide) {
+                clearInterval(autoSlide);
+                clearTimeout(autoSlide);
+            }
             startAutoPlay();
         }
         
@@ -566,14 +613,19 @@
         
         // Start auto-play
         function startAutoPlay() {
-            clearInterval(autoSlide);
+            // Clear any existing timers
+            if (autoSlide) {
+                clearInterval(autoSlide);
+                clearTimeout(autoSlide);
+            }
             
             // Check if current slide is the lorry slide (first slide with wheels)
             const currentSlideElement = slides[currentSlide];
             const isLorrySlide = currentSlideElement && currentSlideElement.querySelector('.lorry-image');
             
             if (isLorrySlide) {
-                // For lorry slide: wait 7 seconds (5s delay + 2s rotation) before changing
+                // For lorry slide: wait 7 seconds total (5s still + 2s rotation) before changing
+                // Wheel animation: delay 5s, duration 2s, so change happens at 7s
                 autoSlide = setTimeout(() => {
                     changeSlide(1);
                 }, 7000);
@@ -589,7 +641,10 @@
         const heroSlider = document.querySelector('.hero-slider');
         if (heroSlider) {
             heroSlider.addEventListener('mouseenter', () => {
-                clearInterval(autoSlide);
+                if (autoSlide) {
+                    clearInterval(autoSlide);
+                    clearTimeout(autoSlide);
+                }
             });
             
             heroSlider.addEventListener('mouseleave', () => {
